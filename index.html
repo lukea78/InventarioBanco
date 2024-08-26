@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco de Alimentos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h2>Iniciar Sesión</h2>
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" placeholder="Ingrese su usuario">
+        <label for="password">Clave:</label>
+        <input type="password" id="password" placeholder="Ingrese su clave">
+        <button onclick="login()">Ingresar</button>
+        <p id="login-error" style="color:red;"></p>
+    </div>
+
+    <div class="container" id="app-container" style="display:none;">
+        <h1>BANCO DE ALIMENTOS</h1>
+        <button id="addProductBtn">Registrar Alimento</button>
+        <button id="viewInventoryBtn">Ver Inventario</button>
+        <button id="addIngressBtn">Registrar Ingreso</button>
+        <button id="addEgressBtn">Registrar Egreso</button>
+        <button id="viewEgressBtn">Ver Egresos</button>
+        <div id="content"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
