@@ -866,5 +866,72 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
   // Limpiar los campos del formulario
   document.getElementById('productForm').reset();
 });
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+async function addProduct() {
+    const productDate = document.getElementById("productDate").value;
+    const productName = document.getElementById("productName").value;
+    const productStock = parseInt(document.getElementById("productStock").value);
+    const productProvider = document.getElementById("productProvider").value;
+    const productExpiry = document.getElementById("productExpiry").value;
+
+    try {
+        await addDoc(collection(db, "inventario"), {
+            date: productDate,
+            name: productName,
+            stock: productStock,
+            provider: productProvider,
+            expiry: productExpiry
+        });
+        alert("Producto añadido exitosamente.");
+        document.getElementById("content").innerHTML = "";
+    } catch (error) {
+        console.error("Error añadiendo producto a Firestore: ", error);
+        alert("Error añadiendo producto.");
+    }
+}
+async function displayInventory() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h2>Inventario</h2>
+        <label for="filterProduct">Filtrar por producto:</label>
+        <input type="text" id="filterProduct" onkeyup="filterByProduct()" placeholder="Buscar por nombre o código">
+        <button onclick="sortByDate()">Ordenar por Fecha de Ingreso</button>
+        <div id="inventoryTableContainer"></div>
+    `;
+
+    // Limpiar el inventario local
+    inventory = [];
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "inventario"));
+        querySnapshot.forEach((doc) => {
+            inventory.push(doc.data());
+        });
+        renderInventoryTable(inventory);
+    } catch (error) {
+        console.error("Error obteniendo el inventario: ", error);
+        alert("Error obteniendo inventario.");
+    }
+}
+async function deleteProduct(index) {
+    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+        const productId = inventory[index].id; // Asegúrate de que el documento tenga un ID
+        try {
+            await deleteDoc(doc(db, "inventario", productId));
+            alert("Producto eliminado exitosamente.");
+            displayInventory(); // Actualizar la tabla de inventario
+        } catch (error) {
+            console.error("Error eliminando el producto: ", error);
+            alert("Error eliminando producto.");
+        }
+    }
+}
 
 
