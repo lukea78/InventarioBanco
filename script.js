@@ -823,5 +823,48 @@ async function agregarProducto(producto, cantidad) {
     console.error("Error al agregar el producto: ", e);
   }
 }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Función para agregar un producto
+async function agregarProducto(producto, cantidad) {
+  try {
+    const docRef = await addDoc(collection(db, "inventario"), {
+      producto: producto,
+      cantidad: cantidad,
+      fechaIngreso: new Date()
+    });
+    console.log("Producto agregado con ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error al agregar el producto: ", e);
+  }
+}
+
+// Manejar el envío del formulario
+document.getElementById('productForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // Evitar el refresco de la página
+  
+  const producto = document.getElementById('producto').value;
+  const cantidad = document.getElementById('cantidad').value;
+  
+  // Llamar a la función para agregar el producto
+  agregarProducto(producto, cantidad);
+  
+  // Limpiar los campos del formulario
+  document.getElementById('productForm').reset();
+});
 
 
