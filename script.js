@@ -794,36 +794,34 @@ window.onload = function () {
     document.getElementById("viewEgressBtn").addEventListener("click", function () {
         displayEgresses();
     });
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID",
+  appId: "TU_APP_ID"
 };
-// Importar Firestore desde el SDK de Firebase
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
-// Inicializar Firestore
-const db = getFirestore();
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// Función para guardar datos
-async function guardarDatos(nombre, cantidad) {
+// Función para agregar datos a Firestore
+async function agregarProducto(producto, cantidad) {
   try {
     const docRef = await addDoc(collection(db, "inventario"), {
-      nombre: nombre,
-      cantidad: cantidad
+      producto: producto,
+      cantidad: cantidad,
+      fechaIngreso: new Date()
     });
-    console.log("Documento escrito con ID: ", docRef.id);
+    console.log("Producto agregado con ID: ", docRef.id);
   } catch (e) {
-    console.error("Error añadiendo documento: ", e);
+    console.error("Error al agregar el producto: ", e);
   }
 }
-
-// Función para obtener datos
-async function obtenerDatos() {
-  const querySnapshot = await getDocs(collection(db, "inventario"));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data().nombre}: ${doc.data().cantidad}`);
-  });
-}
-
-// Ejemplo de cómo usar estas funciones
-guardarDatos("Arroz", 50);  // Esto guarda un ejemplo de datos
-obtenerDatos();  // Esto recupera los datos guardados
 
 
