@@ -795,6 +795,3 @@ window.onload = function () {
         displayEgresses();
     });
 };
-
-
-
