@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
+  apiKey: "AIzaSyCWsJ_I0wUeqFPGr9eZDZgY2tLk0K7RSUI",
   authDomain: "banco-de-alimentos1.firebaseapp.com",
   projectId: "banco-de-alimentos1",
   storageBucket: "banco-de-alimentos1.appspot.com",
@@ -157,5 +157,6 @@ function sortByDate() {
     inventory.sort((a, b) => new Date(b.date) - new Date(a.date));
     renderInventoryTable(inventory);
 }
+
 
 
