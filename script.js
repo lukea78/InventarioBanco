@@ -795,5 +795,35 @@ window.onload = function () {
         displayEgresses();
     });
 };
+// Importar Firestore desde el SDK de Firebase
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+// Inicializar Firestore
+const db = getFirestore();
+
+// Función para guardar datos
+async function guardarDatos(nombre, cantidad) {
+  try {
+    const docRef = await addDoc(collection(db, "inventario"), {
+      nombre: nombre,
+      cantidad: cantidad
+    });
+    console.log("Documento escrito con ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error añadiendo documento: ", e);
+  }
+}
+
+// Función para obtener datos
+async function obtenerDatos() {
+  const querySnapshot = await getDocs(collection(db, "inventario"));
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${doc.data().nombre}: ${doc.data().cantidad}`);
+  });
+}
+
+// Ejemplo de cómo usar estas funciones
+guardarDatos("Arroz", 50);  // Esto guarda un ejemplo de datos
+obtenerDatos();  // Esto recupera los datos guardados
 
 
