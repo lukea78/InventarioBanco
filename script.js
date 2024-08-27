@@ -1,3 +1,55 @@
+// Lista de usuarios y claves
+const users = [
+    { username: "usuario1", password: "banco21" },
+    { username: "usuario2", password: "banco22" },
+    { username: "usuario3", password: "banco23" },
+    { username: "usuario4", password: "banco24" },
+    { username: "usuario5", password: "banco25" },
+    { username: "usuario6", password: "banco26" },
+    { username: "usuario7", password: "banco27" },
+    { username: "usuario8", password: "banco28" }
+];
+
+// Función para el inicio de sesión
+function login() {
+    const usernameInput = document.getElementById("username").value;
+    const passwordInput = document.getElementById("password").value;
+
+    const user = users.find(u => u.username === usernameInput && u.password === passwordInput);
+
+    if (user) {
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("app-container").style.display = "block";
+    } else {
+        document.getElementById("login-error").textContent = "Usuario o clave incorrecta.";
+    }
+}
+
+// Evento de carga de la ventana para gestionar los botones y su interacción
+window.onload = function () {
+    document.getElementById("addProductBtn").addEventListener("click", function () {
+        displayAddProductForm();
+    });
+
+    document.getElementById("viewInventoryBtn").addEventListener("click", function () {
+        displayInventory();
+    });
+
+    document.getElementById("addIngressBtn").addEventListener("click", function () {
+        displayAddIngressForm();
+    });
+
+    document.getElementById("addEgressBtn").addEventListener("click", function () {
+        displayAddEgressForm();
+    });
+
+    document.getElementById("viewEgressBtn").addEventListener("click", function () {
+        displayEgresses();
+    });
+};
+const supabaseUrl = 'https://jvbwnbiiluliipbnwabu.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2YnduYmlpbHVsaWlwYm53YWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ3NjM4NDQsImV4cCI6MjA0MDMzOTg0NH0.pVoxJrLkl7SifBcUMNRvnQSEO4Mj2GpOSFblC1LpTxk';
+const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
 window.onload = function () {
     document.getElementById("addProductBtn").addEventListener("click", function () {
         displayAddProductForm();
@@ -12,7 +64,6 @@ window.onload = function () {
     });
 };
 
-let inventory = [];
 
 // Formulario para registrar alimentos e importar
 function displayAddProductForm() {
@@ -36,24 +87,27 @@ function displayAddProductForm() {
 }
 
 // Función para agregar un producto manualmente
-function addProduct() {
+async function addProduct() {
     const productDate = document.getElementById("productDate").value;
     const productName = document.getElementById("productName").value;
     const productStock = parseInt(document.getElementById("productStock").value);
     const productProvider = document.getElementById("productProvider").value;
     const productExpiry = document.getElementById("productExpiry").value;
 
-    let existingProduct = inventory.find(item => item.name === productName && item.expiry === productExpiry);
+    const { data, error } = await supabase
+        .from('inventario')
+        .insert([
+            { product_name: productName, stock: productStock, provider: productProvider, expiry_date: productExpiry, created_at: productDate }
+        ]);
 
-    if (existingProduct) {
-        existingProduct.stock += productStock;
+    if (error) {
+        console.error("Error al añadir el producto:", error);
     } else {
-        inventory.push({ date: productDate, name: productName, stock: productStock, provider: productProvider, expiry: productExpiry });
+        alert('Producto añadido exitosamente.');
+        displayInventory();  // Refrescar el inventario después de agregar
     }
-
-    alert("Producto añadido exitosamente.");
-    document.getElementById("content").innerHTML = "";
 }
+
 
 // Función para importar productos desde un archivo CSV delimitado por punto y coma
 function importProducts() {
@@ -96,18 +150,20 @@ function handleFileUpload(event) {
 }
 
 // Función para ver el inventario con filtro y vencimiento editable
-function displayInventory() {
-    const content = document.getElementById("content");
-    content.innerHTML = `
-        <h2>Inventario</h2>
-        <label for="filterProduct">Filtrar por producto:</label>
-        <input type="text" id="filterProduct" onkeyup="filterByProduct()" placeholder="Buscar por nombre o código">
-        <button onclick="sortByDate()">Ordenar por Fecha de Ingreso</button>
-        <div id="inventoryTableContainer"></div>
-    `;
+async function displayInventory() {
+    const { data: inventory, error } = await supabase
+        .from('inventario')
+        .select('*');
+
+    if (error) {
+        console.error('Error al obtener el inventario:', error);
+    } else {
+        renderInventoryTable(inventory);  // Mostrar los datos en la tabla
+    }
+}
 
     renderInventoryTable(inventory);
-}
+
 
 // Función para renderizar la tabla del inventario
 function renderInventoryTable(inventoryData) {
@@ -747,51 +803,3 @@ function renderInventoryTable(inventoryData) {
         tableContainer.innerHTML = "<p>No hay productos en el inventario.</p>";
     }
 }
-// Lista de usuarios y claves
-const users = [
-    { username: "usuario1", password: "banco21" },
-    { username: "usuario2", password: "banco22" },
-    { username: "usuario3", password: "banco23" },
-    { username: "usuario4", password: "banco24" },
-    { username: "usuario5", password: "banco25" },
-    { username: "usuario6", password: "banco26" },
-    { username: "usuario7", password: "banco27" },
-    { username: "usuario8", password: "banco28" }
-];
-
-// Función para el inicio de sesión
-function login() {
-    const usernameInput = document.getElementById("username").value;
-    const passwordInput = document.getElementById("password").value;
-
-    const user = users.find(u => u.username === usernameInput && u.password === passwordInput);
-
-    if (user) {
-        document.getElementById("login-container").style.display = "none";
-        document.getElementById("app-container").style.display = "block";
-    } else {
-        document.getElementById("login-error").textContent = "Usuario o clave incorrecta.";
-    }
-}
-
-window.onload = function () {
-    document.getElementById("addProductBtn").addEventListener("click", function () {
-        displayAddProductForm();
-    });
-
-    document.getElementById("viewInventoryBtn").addEventListener("click", function () {
-        displayInventory();
-    });
-
-    document.getElementById("addIngressBtn").addEventListener("click", function () {
-        displayAddIngressForm();
-    });
-
-    document.getElementById("addEgressBtn").addEventListener("click", function () {
-        displayAddEgressForm();
-    });
-
-    document.getElementById("viewEgressBtn").addEventListener("click", function () {
-        displayEgresses();
-    });
-};
