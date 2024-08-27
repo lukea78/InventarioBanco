@@ -97,7 +97,13 @@ async function addProduct() {
     const { data, error } = await supabase
         .from('inventario')
         .insert([
-            { product_name: productName, stock: productStock, provider: productProvider, expiry_date: productExpiry, created_at: productDate }
+            { 
+                identificación: productName, // Cambiado de 'product_name'
+                existencias: productStock,   // Cambiado de 'stock'
+                proveedor: productProvider,  // Este está bien
+                fecha_de_caducidad: productExpiry, // Cambiado de 'expiry_date'
+                creado_en: productDate // Cambiado de 'created_at'
+            }
         ]);
 
     if (error) {
@@ -107,6 +113,7 @@ async function addProduct() {
         displayInventory();  // Refrescar el inventario después de agregar
     }
 }
+
 
 
 // Función para importar productos desde un archivo CSV delimitado por punto y coma
